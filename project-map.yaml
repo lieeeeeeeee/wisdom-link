@@ -116,12 +116,36 @@ files:
     purpose: ''
     state: []
     type: module
+  - path: src/app/player/page.tsx
+    exports:
+      - default:function
+    imports:
+      - '@/components/layout/Layout:{Layout}'
+      - '@/components/audio/AudioPlayer:{AudioPlayer}'
+    interfaces: []
+    methods:
+      - AudioPlayerDemo()
+    props: []
+    purpose: ''
+    state: []
+    type: module
+  - path: src/components/audio/AudioPlayer.tsx
+    exports: []
+    imports: []
+    interfaces: []
+    methods: []
+    props: []
+    purpose: ''
+    state: []
+    type: module
   - path: src/components/audio/AudioTile.tsx
     exports:
       - default:function
     imports:
       - '@/app/audios/mockData:{AudioItem}'
       - next/link:{Link}
+      - react:{useState}
+      - ./AudioPlayer:{AudioPlayer}
     interfaces:
       - AudioTileProps
     methods:
@@ -129,10 +153,12 @@ files:
       - 'formatDuration(seconds: number)'
       - 'formatFileSize(bytes: number)'
       - 'AudioTile({ audio }: AudioTileProps)'
+      - togglePlayer()
     props:
       - audio :unknown
     purpose: ''
-    state: []
+    state:
+      - isPlayerVisible:unknown
     type: module
   - path: src/components/audio/AudioTileSkeleton.tsx
     exports:
