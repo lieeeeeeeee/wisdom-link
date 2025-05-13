@@ -2,6 +2,7 @@
 
 import { useState, useRef, DragEvent, ChangeEvent } from "react";
 import { validateAudioFile, formatFileSize } from "@/utils/fileUtils";
+import { showSuccessToast, showErrorToast } from "@/utils/toastUtils";
 
 interface DropZoneProps {
   onFileSelect: (file: File) => void;
@@ -49,8 +50,11 @@ export default function DropZone({ onFileSelect, selectedFile }: DropZoneProps) 
     
     if (validationResult.isValid) {
       onFileSelect(file);
+      showSuccessToast('ファイルが正常に選択されました');
     } else {
-      setError(validationResult.errorMessage || "ファイルが無効です");
+      const errorMessage = validationResult.errorMessage || "ファイルが無効です";
+      setError(errorMessage);
+      showErrorToast(errorMessage);
     }
   };
 

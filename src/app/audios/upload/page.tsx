@@ -4,6 +4,7 @@ import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import Layout from "@/components/layout/Layout";
 import DropZone from "@/components/upload/DropZone";
+import { showSuccessToast, showErrorToast, showLoadingToast, updateToast } from "@/utils/toastUtils";
 
 export default function UploadPage() {
   const router = useRouter();
@@ -32,7 +33,7 @@ export default function UploadPage() {
     
     // ファイルバリデーション
     if (!file) {
-      alert("ファイルを選択してください");
+      showErrorToast("ファイルを選択してください");
       isValid = false;
     }
     
@@ -47,11 +48,12 @@ export default function UploadPage() {
     }
     
     setIsSubmitting(true);
+    const toastId = showLoadingToast("アップロード中...");
     
     // ここではローカルのみで完結するため、実際のアップロードは行わず
     // 1秒後に処理完了とする
     setTimeout(() => {
-      alert(`ファイル「${file?.name}」をタイトル「${title}」でアップロードしました（デモ）`);
+      updateToast(toastId, "success", `「${title}」が正常にアップロードされました`);
       setIsSubmitting(false);
       router.push("/audios");
     }, 1000);
