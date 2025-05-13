@@ -48,10 +48,37 @@ files:
   - path: src/app/page.tsx
     exports:
       - default:function
-    imports: []
+    imports:
+      - '@/components/layout/Layout:{Layout}'
     interfaces: []
     methods:
       - Home()
+    props: []
+    purpose: ''
+    state: []
+    type: module
+  - path: src/components/layout/Layout.tsx
+    exports:
+      - default:function
+    imports:
+      - ./Navbar:{Navbar}
+    interfaces:
+      - LayoutProps
+    methods:
+      - 'Layout({ children }: LayoutProps)'
+    props:
+      - children :unknown
+    purpose: ''
+    state: []
+    type: module
+  - path: src/components/layout/Navbar.tsx
+    exports:
+      - default:function
+    imports:
+      - next/link:{Link}
+    interfaces: []
+    methods:
+      - Navbar()
     props: []
     purpose: ''
     state: []
