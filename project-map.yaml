@@ -63,6 +63,7 @@ files:
       - next/navigation:{useRouter}
       - '@/components/layout/Layout:{Layout}'
       - '@/components/upload/DropZone:{DropZone}'
+      - '@/utils/toastUtils:{showSuccessToast,showErrorToast,showLoadingToast,updateToast}'
     interfaces: []
     methods:
       - UploadPage()
@@ -90,6 +91,7 @@ files:
     imports:
       - next:{Metadata}
       - next/font/google:{Geist,Geist_Mono}
+      - react-hot-toast:{Toaster}
       - ./globals.css
     interfaces: []
     methods:
@@ -129,14 +131,53 @@ files:
     purpose: ''
     state: []
     type: module
-  - path: src/components/audio/AudioPlayer.tsx
-    exports: []
-    imports: []
+  - path: src/app/toast-demo/page.tsx
+    exports:
+      - default:function
+    imports:
+      - react:{useState}
+      - '@/components/layout/Layout:{Layout}'
+      - '@/utils/toastUtils:{showSuccessToast,showErrorToast,showInfoToast,showLoadingToast,updateToast,showCustomToast}'
     interfaces: []
-    methods: []
+    methods:
+      - ToastDemo()
+      - handleSuccessToast()
+      - handleErrorToast()
+      - handleInfoToast()
+      - handleLoadingToast()
+      - handleCustomToast()
     props: []
     purpose: ''
-    state: []
+    state:
+      - loadingToastId:string | undefined
+    type: module
+  - path: src/components/audio/AudioPlayer.tsx
+    exports:
+      - default:function
+    imports:
+      - react:{useState,useRef,useEffect}
+      - '@/utils/toastUtils:{showInfoToast}'
+    interfaces:
+      - AudioPlayerProps
+    methods:
+      - 'AudioPlayer({ src, title }: AudioPlayerProps)'
+      - updateTime()
+      - updateDuration()
+      - updatePlayState()
+      - handleEnd()
+      - togglePlay()
+      - 'handleVolumeChange(e: React.ChangeEvent<HTMLInputElement>)'
+      - 'handleSeek(e: React.ChangeEvent<HTMLInputElement>)'
+      - 'formatTime(time: number)'
+    props:
+      - src:unknown
+      - title :unknown
+    purpose: ''
+    state:
+      - isPlaying:unknown
+      - currentTime:unknown
+      - duration:unknown
+      - volume:unknown
     type: module
   - path: src/components/audio/AudioTile.tsx
     exports:
@@ -203,6 +244,7 @@ files:
     imports:
       - react:{useState,useRef,DragEvent,ChangeEvent}
       - '@/utils/fileUtils:{validateAudioFile,formatFileSize}'
+      - '@/utils/toastUtils:{showSuccessToast,showErrorToast}'
     interfaces:
       - DropZoneProps
     methods:
@@ -235,6 +277,47 @@ files:
     props:
       - file:unknown
       - bytes:unknown
+    purpose: ''
+    state: []
+    type: module
+  - path: src/utils/toastUtils.ts
+    exports:
+      - showSuccessToast:variable
+      - showErrorToast:variable
+      - showInfoToast:variable
+      - showLoadingToast:variable
+      - dismissToast:variable
+      - updateToast:variable
+      - showCustomToast:variable
+    imports:
+      - react-hot-toast:{toast,Toast,Renderable}
+    interfaces: []
+    methods:
+      - 'showSuccessToast(message: string)'
+      - 'showErrorToast(message: string)'
+      - 'showInfoToast(message: string)'
+      - 'showLoadingToast(message: string = ''処理中...'')'
+      - 'dismissToast(toastId: string | undefined)'
+      - |-
+        updateToast(
+          toastId: string | undefined,
+          type: 'success' | 'error',
+          message: string
+        )
+      - |-
+        showCustomToast(
+          message: string,
+          options?: {
+            icon?: Renderable;
+            style?: React.CSSProperties;
+            duration?: number;
+          }
+        )
+    props:
+      - message:unknown
+      - toastId:unknown
+      - type:unknown
+      - options?:unknown
     purpose: ''
     state: []
     type: module
