@@ -1,5 +1,7 @@
 import { AudioItem } from "@/app/audios/mockData";
 import Link from "next/link";
+import { useState } from "react";
+import AudioPlayer from "./AudioPlayer";
 
 // 日付フォーマット関数
 function formatDate(dateString: string): string {
@@ -29,6 +31,12 @@ interface AudioTileProps {
 }
 
 export default function AudioTile({ audio }: AudioTileProps) {
+  const [isPlayerVisible, setIsPlayerVisible] = useState(false);
+
+  const togglePlayer = () => {
+    setIsPlayerVisible(!isPlayerVisible);
+  };
+
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
       <div className="p-4">
@@ -48,6 +56,7 @@ export default function AudioTile({ audio }: AudioTileProps) {
           <button
             className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
             aria-label="再生"
+            onClick={togglePlayer}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -86,6 +95,15 @@ export default function AudioTile({ audio }: AudioTileProps) {
             </svg>
           </Link>
         </div>
+
+        {isPlayerVisible && (
+          <div className="mt-4">
+            <AudioPlayer 
+              src={`/audio/sample.wav`} // 実際のAPIが実装されたらaudio.urlなどを使用
+              title={audio.title}
+            />
+          </div>
+        )}
       </div>
     </div>
   );
