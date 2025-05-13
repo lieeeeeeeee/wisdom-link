@@ -55,6 +55,29 @@ files:
       - loading:unknown
       - loadingMore:unknown
     type: module
+  - path: src/app/audios/upload/page.tsx
+    exports:
+      - default:function
+    imports:
+      - react:{useState,FormEvent}
+      - next/navigation:{useRouter}
+      - '@/components/layout/Layout:{Layout}'
+      - '@/components/upload/DropZone:{DropZone}'
+    interfaces: []
+    methods:
+      - UploadPage()
+      - 'handleFileSelect(selectedFile: File)'
+      - validateForm()
+      - 'handleSubmit(e: FormEvent)'
+      - handleCancel()
+    props: []
+    purpose: ''
+    state:
+      - title:unknown
+      - file:File | null
+      - isSubmitting:unknown
+      - titleError:string | null
+    type: module
   - path: src/app/globals.css
     exports: []
     imports: []
@@ -145,6 +168,47 @@ files:
     methods:
       - Navbar()
     props: []
+    purpose: ''
+    state: []
+    type: module
+  - path: src/components/upload/DropZone.tsx
+    exports:
+      - default:function
+    imports:
+      - react:{useState,useRef,DragEvent,ChangeEvent}
+      - '@/utils/fileUtils:{validateAudioFile,formatFileSize}'
+    interfaces:
+      - DropZoneProps
+    methods:
+      - 'DropZone({ onFileSelect, selectedFile }: DropZoneProps)'
+      - 'handleDragOver(e: DragEvent<HTMLDivElement>)'
+      - 'handleDragLeave(e: DragEvent<HTMLDivElement>)'
+      - 'handleDrop(e: DragEvent<HTMLDivElement>)'
+      - 'handleFileInputChange(e: ChangeEvent<HTMLInputElement>)'
+      - 'validateAndSelectFile(file: File)'
+      - handleButtonClick()
+    props:
+      - onFileSelect:unknown
+      - selectedFile :unknown
+    purpose: ''
+    state:
+      - isDragging:unknown
+      - error:string | null
+    type: module
+  - path: src/utils/fileUtils.ts
+    exports:
+      - validateAudioFile:function
+      - formatFileSize:function
+      - FileValidationResult:interface
+    imports: []
+    interfaces:
+      - FileValidationResult
+    methods:
+      - 'validateAudioFile(file: File)'
+      - 'formatFileSize(bytes: number)'
+    props:
+      - file:unknown
+      - bytes:unknown
     purpose: ''
     state: []
     type: module
