@@ -1,0 +1,58 @@
+files:
+  - path: next-env.d.ts
+    exports: []
+    imports: []
+    interfaces: []
+    methods: []
+    props: []
+    purpose: ''
+    state: []
+    type: module
+  - path: next.config.ts
+    exports:
+      - default:variable
+    imports:
+      - next:{NextConfig}
+    interfaces: []
+    methods: []
+    props: []
+    purpose: ''
+    state: []
+    type: module
+  - path: src/app/globals.css
+    exports: []
+    imports: []
+    purpose: ''
+    type: stylesheet
+  - path: src/app/layout.tsx
+    exports:
+      - default:function
+      - metadata:variable
+    imports:
+      - next:{Metadata}
+      - next/font/google:{Geist,Geist_Mono}
+      - ./globals.css
+    interfaces: []
+    methods:
+      - |-
+        RootLayout({
+          children,
+        }: Readonly<{
+          children: React.ReactNode;
+        }>)
+    props:
+      - children:unknown
+    purpose: ''
+    state: []
+    type: module
+  - path: src/app/page.tsx
+    exports:
+      - default:function
+    imports: []
+    interfaces: []
+    methods:
+      - Home()
+    props: []
+    purpose: ''
+    state: []
+    type: module
