@@ -7,6 +7,31 @@ import DropZone from "@/components/upload/DropZone";
 import { showErrorToast, showLoadingToast, updateToast } from "@/utils/toastUtils";
 import { useAuth } from "@/contexts/AuthContext";
 import Link from "next/link";
+import { supabase, AudioFile } from "@/utils/supabase";
+import { v4 as uuidv4 } from "uuid";
+
+const getAudioDuration = (file: File): Promise<number> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const audioContext = new AudioContext();
+      audioContext.decodeAudioData(event.target?.result as ArrayBuffer, 
+        (buffer) => {
+          resolve(Math.round(buffer.duration));
+        },
+        (error) => {
+          console.error("Error decoding audio data:", error);
+          reject(new Error("音声ファイルの解析に失敗しました。"));
+        }
+      );
+    };
+    reader.onerror = (error) => {
+      console.error("FileReader error:", error);
+      reject(new Error("ファイルの読み込みに失敗しました。"));
+    };
+    reader.readAsArrayBuffer(file);
+  });
+};
 
 export default function UploadPage() {
   const router = useRouter();
@@ -43,27 +68,83 @@ export default function UploadPage() {
     return isValid;
   };
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     
     if (!validateForm()) {
+      return;
+    }
+
+    if (!user) {
+      showErrorToast("アップロードするにはログインが必要です。");
+      setIsSubmitting(false);
       return;
     }
     
     setIsSubmitting(true);
     const toastId = showLoadingToast("アップロード中...");
     
-    // TODO: Supabaseへの実際のアップロード処理を実装する
-    //   - ファイルをSupabase Storageにアップロード (例: user.id を含めたパスに)
-    //   - audiosテーブルにメタデータを保存 (title, filename, size, duration, user_id)
-    //   - user_id は user.id から取得する
-    
-    // ここではローカルのみで完結するため、実際のアップロードは行わず
-    setTimeout(() => {
-      updateToast(toastId, "success", `「${title}」が正常にアップロードされました`);
+    if (!file) {
+      updateToast(toastId, "error", "ファイルが見つかりません。");
       setIsSubmitting(false);
+      return;
+    }
+
+    try {
+      // 1. 音声ファイルの長さを取得
+      let duration = 0;
+      try {
+        duration = await getAudioDuration(file);
+      } catch (error) {
+        console.error("Error getting audio duration:", error);
+        updateToast(toastId, "error", error instanceof Error ? error.message : "音声ファイルの長さ取得に失敗しました。");
+        setIsSubmitting(false);
+        return;
+      }
+
+      // 2. ファイルをSupabase Storageにアップロード
+      const fileExtension = file.name.split('.').pop();
+      const uniqueFileName = `${uuidv4()}.${fileExtension}`;
+      const filePath = `public/${user.id}/${uniqueFileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("audio-files")
+        .upload(filePath, file);
+
+      if (uploadError) {
+        console.error("Error uploading file to Supabase Storage:", uploadError);
+        updateToast(toastId, "error", `アップロードに失敗しました: ${uploadError.message}`);
+        setIsSubmitting(false);
+        return;
+      }
+
+      // 3. audiosテーブルにメタデータを保存
+      const audioData: Omit<AudioFile, 'id' | 'created_at'> = {
+        title: title.trim(),
+        filename: filePath,
+        size: file.size,
+        duration: duration,
+        user_id: user.id,
+      };
+
+      const { error: dbError } = await supabase.from("audios").insert(audioData);
+
+      if (dbError) {
+        console.error("Error inserting data to Supabase table:", dbError);
+        updateToast(toastId, "error", `データベースへの保存に失敗しました: ${dbError.message}`);
+        setIsSubmitting(false);
+        return;
+      }
+      
+      updateToast(toastId, "success", `「${title}」が正常にアップロードされました`);
       router.push("/audios");
-    }, 1000);
+
+    } catch (error) {
+      console.error("Error during submission process:", error);
+      updateToast(toastId, "error", error instanceof Error ? error.message : "予期せぬエラーが発生しました。");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleCancel = () => {
