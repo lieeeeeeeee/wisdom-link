@@ -111,15 +111,11 @@ function AudioPlayer({ src, title }: AudioPlayerProps) {
   }, []);
 
   return (
-    <div className="bg-gray-50 dark:bg-gray-900 p-3 rounded-md">
+    <div className="bg-gray-50 dark:bg-gray-900 p-3 rounded-md border-0" style={{ boxShadow: 'none' }}>
       <audio ref={audioRef} src={src} preload="metadata" />
 
-      <div className="flex flex-col space-y-2">
-        <div className="text-sm text-gray-700 dark:text-gray-300 font-medium">
-          {title}
-        </div>
-
-        <div className="flex items-center space-x-2">
+      <div className="flex flex-col border-0" style={{ borderBottom: 'none', borderTop: 'none' }}>
+        <div className="flex items-center space-x-2 h-12 border-0 pt-1" style={{ borderTop: 'none' }}>
           <button
             onClick={togglePlay}
             className="p-1 rounded-full bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -171,10 +167,10 @@ function AudioPlayer({ src, title }: AudioPlayerProps) {
             {formatTime(duration)}
           </div>
 
-          <div className="flex items-center ml-2">
+          <div className="flex flex-col items-center ml-2 h-16">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-4 w-4 text-gray-600 dark:text-gray-400"
+              className="h-6 w-6 text-gray-600 dark:text-gray-400 mb-1"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -183,17 +179,21 @@ function AudioPlayer({ src, title }: AudioPlayerProps) {
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth={2}
-                d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15.536a5 5 0 010-7.072m12.728 3.536a3 3 0 00-4.243-4.243m-9.9 2.828a9 9 0 010-12.728"
+                d="M11 5L6 9H2v6h4l5 4V5z"
               />
             </svg>
             <input
               type="range"
-              className="w-14 h-1 ml-1 cursor-pointer accent-blue-600"
+              className="h-12 w-1 cursor-pointer accent-blue-600 appearance-none bg-gray-300 dark:bg-gray-700 rounded-full orient-vertical"
               min="0"
               max="1"
               step="0.01"
               value={volume}
               onChange={handleVolumeChange}
+              style={{ 
+                WebkitAppearance: "slider-vertical",
+                writingMode: "bt-lr" as any
+              }}
             />
           </div>
         </div>
