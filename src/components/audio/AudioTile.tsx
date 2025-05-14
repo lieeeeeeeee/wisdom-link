@@ -150,7 +150,7 @@ function AudioTile({ audio }: AudioTileProps) {
       </div>
 
       {isPlayerVisible && (
-        <div className="mt-4 p-4 border-t dark:border-gray-700">
+        <div className="mt-4 p-4">
           {isLoadingUrl && <p className="text-sm text-gray-500 dark:text-gray-400">音声情報を読み込み中...</p>}
           {errorUrl && <p className="text-sm text-red-500">{errorUrl}</p>}
           {audioSrc && !isLoadingUrl && !errorUrl && (
