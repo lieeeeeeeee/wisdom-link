@@ -3,7 +3,8 @@ import { useState, useCallback } from "react";
 interface AudioDropDownMenuProps {
   isOpen: boolean;
   onClose: () => void;
-  onDownload: () => void;
+  audioUrl: string;
+  audioTitle: string;
   onChangePlaybackRate: (rate: number) => void;
   currentPlaybackRate: number;
 }
@@ -11,15 +12,36 @@ interface AudioDropDownMenuProps {
 const AudioDropDownMenu = ({
   isOpen,
   onClose,
-  onDownload,
+  audioUrl,
+  audioTitle,
   onChangePlaybackRate,
   currentPlaybackRate,
 }: AudioDropDownMenuProps) => {
-  // ダウンロードボタンをクリックしたときの処理
+  // ダウンロード処理を画面遷移なしで実行
   const handleDownload = useCallback(() => {
-    onDownload();
+    if (!audioUrl) return;
+    
+    // blobとしてファイルを取得
+    fetch(audioUrl)
+      .then(response => response.blob())
+      .then(blob => {
+        // ダウンロード用の一時的なリンク要素を作成
+        const a = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        a.href = url;
+        a.download = `${audioTitle || 'audio'}.mp3`; // ダウンロードファイル名
+        document.body.appendChild(a);
+        a.click();
+        
+        // クリーンアップ
+        setTimeout(() => {
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        }, 100);
+      });
+      
     onClose();
-  }, [onDownload, onClose]);
+  }, [audioUrl, audioTitle, onClose]);
 
   // 再生速度変更ボタンをクリックしたときの処理
   const handlePlaybackRateChange = useCallback((rate: number) => {

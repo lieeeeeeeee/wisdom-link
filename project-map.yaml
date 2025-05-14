@@ -157,7 +157,8 @@ files:
         AudioDropDownMenu({
           isOpen,
           onClose,
-          onDownload,
+          audioUrl,
+          audioTitle,
           onChangePlaybackRate,
           currentPlaybackRate,
         }: AudioDropDownMenuProps)

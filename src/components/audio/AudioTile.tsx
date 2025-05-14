@@ -200,11 +200,12 @@ function AudioTile({ audio }: AudioTileProps) {
               </svg>
             </button>
 
-            {/* 新しいAudioDropDownMenuコンポーネントを使用 */}
+            {/* AudioDropDownMenuコンポーネントの更新 */}
             <AudioDropDownMenu
               isOpen={isMenuOpen}
               onClose={() => setIsMenuOpen(false)}
-              onDownload={handleDownload}
+              audioUrl={audioSrc || ''}
+              audioTitle={audio.title}
               onChangePlaybackRate={changePlaybackRate}
               currentPlaybackRate={playbackRate}
             />
