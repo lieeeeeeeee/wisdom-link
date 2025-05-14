@@ -145,33 +145,14 @@ files:
     state:
       - loadingToastId:string | undefined
     type: module
-  - path: src/components/audio/AudioPlayer.tsx
-    exports:
-      - default:unknown
-    imports:
-      - react:{useState,useRef,useEffect,memo,useCallback}
-      - '@/utils/toastUtils:{showInfoToast}'
-    interfaces:
-      - AudioPlayerProps
-    methods:
-      - 'AudioPlayer({ src, title }: AudioPlayerProps)'
-    props: []
-    purpose: ''
-    state:
-      - isPlaying:unknown
-      - currentTime:unknown
-      - duration:unknown
-      - volume:unknown
-    type: module
   - path: src/components/audio/AudioTile.tsx
     exports:
       - default:unknown
     imports:
-      - next/link:{Link}
-      - react:{useState,useCallback,memo}
-      - ./AudioPlayer:{AudioPlayer}
+      - react:{useState,useCallback,memo,useRef,useEffect}
       - '@/utils/supabase:{createSignedAudioUrl,AudioFile}'
       - '@/contexts/AuthContext:{useAuth}'
+      - '@/utils/toastUtils:{showInfoToast}'
     interfaces:
       - AudioTileProps
     methods:
@@ -179,13 +160,18 @@ files:
       - 'formatDuration(seconds: number)'
       - 'formatFileSize(bytes: number)'
       - 'AudioTile({ audio }: AudioTileProps)'
+      - fetchAudioUrl()
     props: []
     purpose: ''
     state:
-      - isPlayerVisible:unknown
       - audioSrc:string | null
       - isLoadingUrl:unknown
       - errorUrl:string | null
+      - isPlaying:unknown
+      - currentTime:unknown
+      - audioDuration:unknown
+      - isMenuOpen:unknown
+      - playbackRate:unknown
     type: module
   - path: src/components/audio/AudioTileSkeleton.tsx
     exports:
