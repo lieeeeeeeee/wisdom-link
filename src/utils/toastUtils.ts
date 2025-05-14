@@ -1,4 +1,4 @@
-import toast, { Toast, Renderable } from 'react-hot-toast';
+import toast, { Renderable } from 'react-hot-toast';
 
 /**
  * トースト通知のユーティリティ関数群

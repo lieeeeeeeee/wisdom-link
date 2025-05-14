@@ -4,7 +4,7 @@ import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import Layout from "@/components/layout/Layout";
 import DropZone from "@/components/upload/DropZone";
-import { showSuccessToast, showErrorToast, showLoadingToast, updateToast } from "@/utils/toastUtils";
+import { showErrorToast, showLoadingToast, updateToast } from "@/utils/toastUtils";
 
 export default function UploadPage() {
   const router = useRouter();
