@@ -19,31 +19,18 @@ files:
     purpose: ''
     state: []
     type: module
-  - path: src/app/audios/mockData.ts
-    exports:
-      - generateMockAudios:function
-      - AudioItem:interface
-      - initialMockAudios:variable
-    imports: []
-    interfaces:
-      - AudioItem
-    methods:
-      - 'generateMockAudios(count: number,startIndex: number = 0)'
-    props:
-      - count:unknown
-      - startIndex:unknown
-    purpose: ''
-    state: []
-    type: module
   - path: src/app/audios/page.tsx
     exports:
       - default:function
     imports:
-      - react:{useState,useEffect}
+      - react:{useState,useEffect,useCallback}
       - '@/components/layout/Layout:{Layout}'
       - '@/components/audio/AudioTile:{AudioTile}'
       - '@/components/audio/AudioTileSkeleton:{AudioTileSkeleton}'
-      - ./mockData:{generateMockAudios,initialMockAudios,AudioItem}
+      - '@/contexts/AuthContext:{useAuth}'
+      - next/link:{Link}
+      - '@/utils/supabase:{supabase,AudioFile}'
+      - '@/utils/toastUtils:{showErrorToast}'
     interfaces: []
     methods:
       - AudiosPage()
@@ -51,9 +38,10 @@ files:
     props: []
     purpose: ''
     state:
-      - audios:AudioItem[]
+      - audios:AudioFile[]
       - loading:unknown
       - loadingMore:unknown
+      - allDataLoaded:unknown
     type: module
   - path: src/app/audios/upload/page.tsx
     exports:
@@ -64,6 +52,8 @@ files:
       - '@/components/layout/Layout:{Layout}'
       - '@/components/upload/DropZone:{DropZone}'
       - '@/utils/toastUtils:{showErrorToast,showLoadingToast,updateToast}'
+      - '@/contexts/AuthContext:{useAuth}'
+      - next/link:{Link}
     interfaces: []
     methods:
       - UploadPage()
@@ -93,6 +83,7 @@ files:
       - next/font/google:{Geist,Geist_Mono}
       - react-hot-toast:{Toaster}
       - ./globals.css
+      - '@/contexts/AuthContext:{AuthProvider}'
     interfaces: []
     methods:
       - |-
@@ -183,10 +174,11 @@ files:
     exports:
       - default:function
     imports:
-      - '@/app/audios/mockData:{AudioItem}'
       - next/link:{Link}
       - react:{useState}
       - ./AudioPlayer:{AudioPlayer}
+      - '@/utils/supabase:{createSignedAudioUrl,AudioFile}'
+      - '@/contexts/AuthContext:{useAuth}'
     interfaces:
       - AudioTileProps
     methods:
@@ -200,6 +192,9 @@ files:
     purpose: ''
     state:
       - isPlayerVisible:unknown
+      - audioSrc:string | null
+      - isLoadingUrl:unknown
+      - errorUrl:string | null
     type: module
   - path: src/components/audio/AudioTileSkeleton.tsx
     exports:
@@ -208,6 +203,19 @@ files:
     interfaces: []
     methods:
       - AudioTileSkeleton()
+    props: []
+    purpose: ''
+    state: []
+    type: module
+  - path: src/components/auth/LoginButton.tsx
+    exports:
+      - default:variable
+    imports:
+      - react:{React}
+      - '@/contexts/AuthContext:{useAuth}'
+    interfaces: []
+    methods:
+      - LoginButton()
     props: []
     purpose: ''
     state: []
@@ -231,6 +239,7 @@ files:
       - default:function
     imports:
       - next/link:{Link}
+      - '@/components/auth/LoginButton:{LoginButton}'
     interfaces: []
     methods:
       - Navbar()
@@ -263,6 +272,30 @@ files:
       - isDragging:unknown
       - error:string | null
     type: module
+  - path: src/contexts/AuthContext.tsx
+    exports:
+      - AuthProvider:variable
+      - useAuth:variable
+    imports:
+      - react:{React,createContext,useContext,useEffect,useState,ReactNode}
+      - '@supabase/supabase-js:{Session,User}'
+      - '@/utils/supabase:{supabase}'
+    interfaces:
+      - AuthContextType
+    methods:
+      - 'AuthProvider({ children }: { children: ReactNode })'
+      - getSession()
+      - signInWithGoogle()
+      - signOut()
+      - useAuth()
+    props:
+      - children :unknown
+    purpose: ''
+    state:
+      - session:Session | null
+      - user:User | null
+      - isLoading:unknown
+    type: module
   - path: src/utils/fileUtils.ts
     exports:
       - validateAudioFile:function
@@ -277,6 +310,23 @@ files:
     props:
       - file:unknown
       - bytes:unknown
+    purpose: ''
+    state: []
+    type: module
+  - path: src/utils/supabase.ts
+    exports:
+      - supabase:variable
+      - AudioFile:interface
+      - createSignedAudioUrl:variable
+    imports:
+      - '@supabase/supabase-js:{createClient}'
+    interfaces:
+      - AudioFile
+    methods:
+      - 'createSignedAudioUrl(filename: string, expiresInSeconds: number = 60)'
+    props:
+      - filename:unknown
+      - expiresInSeconds:unknown
     purpose: ''
     state: []
     type: module
