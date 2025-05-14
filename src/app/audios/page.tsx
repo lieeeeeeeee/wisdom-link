@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import Layout from "@/components/layout/Layout";
 import AudioTile from "@/components/audio/AudioTile";
 import AudioTileSkeleton from "@/components/audio/AudioTileSkeleton";
@@ -16,6 +16,11 @@ export default function AudiosPage() {
   const [loadingMore, setLoadingMore] = useState(false);
   const [allDataLoaded, setAllDataLoaded] = useState(false);
   const ITEMS_PER_PAGE = 8;
+  const audiosRef = useRef<AudioFile[]>([]);
+
+  useEffect(() => {
+    audiosRef.current = audios;
+  }, [audios]);
 
   const fetchAudios = useCallback(async (loadMore = false) => {
     if (!user) {
@@ -40,7 +45,8 @@ export default function AudiosPage() {
         .order('created_at', { ascending: false });
 
       if (loadMore) {
-        query = query.range(audios.length, audios.length + ITEMS_PER_PAGE - 1);
+        const currentLength = audiosRef.current.length;
+        query = query.range(currentLength, currentLength + ITEMS_PER_PAGE - 1);
       } else {
         query = query.limit(ITEMS_PER_PAGE);
       }
@@ -52,10 +58,13 @@ export default function AudiosPage() {
       }
 
       if (data) {
-        setAudios(prevAudios => loadMore ? [...prevAudios, ...data] : data);
-        if (data.length < ITEMS_PER_PAGE || (audios.length + data.length) === count ) {
-           setAllDataLoaded(true);
-        }
+        setAudios(prevAudios => {
+          const newAudios = loadMore ? [...prevAudios, ...data] : data;
+          if (data.length < ITEMS_PER_PAGE || (loadMore && prevAudios.length + data.length === count)) {
+            setAllDataLoaded(true);
+          }
+          return newAudios;
+        });
       }
     } catch (error: any) {
       console.error("Error fetching audios:", error);
@@ -65,7 +74,7 @@ export default function AudiosPage() {
       setLoading(false);
       setLoadingMore(false);
     }
-  }, [user, audios.length]);
+  }, [user]);
 
   useEffect(() => {
     if (user && !isAuthLoading) {
