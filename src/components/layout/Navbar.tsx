@@ -1,4 +1,5 @@
 import Link from "next/link";
+import LoginButton from "@/components/auth/LoginButton";
 
 export default function Navbar() {
   return (
@@ -22,8 +23,8 @@ export default function Navbar() {
             </Link>
           </div>
           
-          {/* 右側のアップロードボタン */}
-          <div>
+          {/* 右側の要素 (アップロードボタンとログインボタン) */}
+          <div className="flex items-center gap-4">
             <Link
               href="/audios/upload"
               className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
@@ -44,6 +45,7 @@ export default function Navbar() {
                 />
               </svg>
             </Link>
+            <LoginButton />
           </div>
         </div>
       </div>
