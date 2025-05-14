@@ -145,6 +145,49 @@ files:
     state:
       - loadingToastId:string | undefined
     type: module
+  - path: src/components/audio/AudioDropDownMenu.tsx
+    exports:
+      - default:variable
+    imports:
+      - react:{useState,useCallback}
+    interfaces:
+      - AudioDropDownMenuProps
+    methods:
+      - |-
+        AudioDropDownMenu({
+          isOpen,
+          onClose,
+          onDownload,
+          onChangePlaybackRate,
+          currentPlaybackRate,
+        }: AudioDropDownMenuProps)
+    props: []
+    purpose: ''
+    state: []
+    type: module
+  - path: src/components/audio/AudioPlayerControls.tsx
+    exports:
+      - default:variable
+    imports:
+      - react:{useCallback}
+    interfaces:
+      - AudioPlayerControlsProps
+    methods:
+      - 'formatDuration(seconds: number)'
+      - |-
+        AudioPlayerControls({
+          isPlaying,
+          currentTime,
+          duration,
+          onPlayPause,
+          onSeek,
+          displayDate,
+          displaySize
+        }: AudioPlayerControlsProps)
+    props: []
+    purpose: ''
+    state: []
+    type: module
   - path: src/components/audio/AudioTile.tsx
     exports:
       - default:unknown
@@ -153,11 +196,12 @@ files:
       - '@/utils/supabase:{createSignedAudioUrl,AudioFile}'
       - '@/contexts/AuthContext:{useAuth}'
       - '@/utils/toastUtils:{showInfoToast}'
+      - ./AudioDropDownMenu:{AudioDropDownMenu}
+      - ./AudioPlayerControls:{AudioPlayerControls}
     interfaces:
       - AudioTileProps
     methods:
       - 'formatDate(dateString: string)'
-      - 'formatDuration(seconds: number)'
       - 'formatFileSize(bytes: number)'
       - 'AudioTile({ audio }: AudioTileProps)'
       - fetchAudioUrl()
