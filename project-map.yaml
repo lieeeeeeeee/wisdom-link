@@ -23,7 +23,7 @@ files:
     exports:
       - default:function
     imports:
-      - react:{useState,useEffect,useCallback}
+      - react:{useState,useEffect,useCallback,useRef}
       - '@/components/layout/Layout:{Layout}'
       - '@/components/audio/AudioTile:{AudioTile}'
       - '@/components/audio/AudioTileSkeleton:{AudioTileSkeleton}'
@@ -147,25 +147,15 @@ files:
     type: module
   - path: src/components/audio/AudioPlayer.tsx
     exports:
-      - default:function
+      - default:unknown
     imports:
-      - react:{useState,useRef,useEffect}
+      - react:{useState,useRef,useEffect,memo,useCallback}
       - '@/utils/toastUtils:{showInfoToast}'
     interfaces:
       - AudioPlayerProps
     methods:
       - 'AudioPlayer({ src, title }: AudioPlayerProps)'
-      - updateTime()
-      - updateDuration()
-      - updatePlayState()
-      - handleEnd()
-      - togglePlay()
-      - 'handleVolumeChange(e: React.ChangeEvent<HTMLInputElement>)'
-      - 'handleSeek(e: React.ChangeEvent<HTMLInputElement>)'
-      - 'formatTime(time: number)'
-    props:
-      - src:unknown
-      - title :unknown
+    props: []
     purpose: ''
     state:
       - isPlaying:unknown
@@ -175,10 +165,10 @@ files:
     type: module
   - path: src/components/audio/AudioTile.tsx
     exports:
-      - default:function
+      - default:unknown
     imports:
       - next/link:{Link}
-      - react:{useState}
+      - react:{useState,useCallback,memo}
       - ./AudioPlayer:{AudioPlayer}
       - '@/utils/supabase:{createSignedAudioUrl,AudioFile}'
       - '@/contexts/AuthContext:{useAuth}'
@@ -189,9 +179,7 @@ files:
       - 'formatDuration(seconds: number)'
       - 'formatFileSize(bytes: number)'
       - 'AudioTile({ audio }: AudioTileProps)'
-      - togglePlayer()
-    props:
-      - audio :unknown
+    props: []
     purpose: ''
     state:
       - isPlayerVisible:unknown
