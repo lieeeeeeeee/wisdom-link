@@ -5,9 +5,12 @@ import { useRouter } from "next/navigation";
 import Layout from "@/components/layout/Layout";
 import DropZone from "@/components/upload/DropZone";
 import { showErrorToast, showLoadingToast, updateToast } from "@/utils/toastUtils";
+import { useAuth } from "@/contexts/AuthContext";
+import Link from "next/link";
 
 export default function UploadPage() {
   const router = useRouter();
+  const { user, isLoading: isAuthLoading } = useAuth();
   const [title, setTitle] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -50,8 +53,12 @@ export default function UploadPage() {
     setIsSubmitting(true);
     const toastId = showLoadingToast("アップロード中...");
     
+    // TODO: Supabaseへの実際のアップロード処理を実装する
+    //   - ファイルをSupabase Storageにアップロード (例: user.id を含めたパスに)
+    //   - audiosテーブルにメタデータを保存 (title, filename, size, duration, user_id)
+    //   - user_id は user.id から取得する
+    
     // ここではローカルのみで完結するため、実際のアップロードは行わず
-    // 1秒後に処理完了とする
     setTimeout(() => {
       updateToast(toastId, "success", `「${title}」が正常にアップロードされました`);
       setIsSubmitting(false);
@@ -62,6 +69,30 @@ export default function UploadPage() {
   const handleCancel = () => {
     router.back();
   };
+
+  if (isAuthLoading) {
+    return (
+      <Layout>
+        <div className="flex justify-center items-center h-screen">
+          <p>読み込み中...</p>
+        </div>
+      </Layout>
+    );
+  }
+
+  if (!user) {
+    return (
+      <Layout>
+        <div className="max-w-2xl mx-auto text-center py-12">
+          <h1 className="text-2xl font-bold mb-6">アップロード機能</h1>
+          <p className="mb-4">音声ファイルをアップロードするにはログインが必要です。</p>
+          <Link href="/" className="btn btn-primary">
+            トップページへ戻りログインしてください
+          </Link>
+        </div>
+      </Layout>
+    );
+  }
 
   return (
     <Layout>
