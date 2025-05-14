@@ -63,7 +63,7 @@ files:
       - next/navigation:{useRouter}
       - '@/components/layout/Layout:{Layout}'
       - '@/components/upload/DropZone:{DropZone}'
-      - '@/utils/toastUtils:{showSuccessToast,showErrorToast,showLoadingToast,updateToast}'
+      - '@/utils/toastUtils:{showErrorToast,showLoadingToast,updateToast}'
     interfaces: []
     methods:
       - UploadPage()
@@ -290,7 +290,7 @@ files:
       - updateToast:variable
       - showCustomToast:variable
     imports:
-      - react-hot-toast:{toast,Toast,Renderable}
+      - react-hot-toast:{toast,Renderable}
     interfaces: []
     methods:
       - 'showSuccessToast(message: string)'
