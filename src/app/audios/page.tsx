@@ -96,7 +96,7 @@ export default function AudiosPage() {
       <Layout>
         <div className="pb-8">
           <h1 className="text-2xl font-bold mb-6">音声ライブラリ</h1>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {Array.from({ length: ITEMS_PER_PAGE }).map((_, index) => (
               <AudioTileSkeleton key={index} />
             ))}
@@ -111,7 +111,7 @@ export default function AudiosPage() {
       <Layout>
         <div className="pb-8">
           <h1 className="text-2xl font-bold mb-6">音声ライブラリ</h1>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {Array.from({ length: ITEMS_PER_PAGE }).map((_, index) => (
               <AudioTileSkeleton key={index} />
             ))}
@@ -150,7 +150,7 @@ export default function AudiosPage() {
         )}
 
         {audios.length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
             {audios.map((audio) => (
               <AudioTile key={audio.id} audio={audio} />
             ))}
