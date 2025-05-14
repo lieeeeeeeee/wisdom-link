@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useCallback, memo } from "react";
 import AudioPlayer from "./AudioPlayer";
 import { createSignedAudioUrl, AudioFile } from "@/utils/supabase";
 import { useAuth } from "@/contexts/AuthContext";
@@ -34,23 +34,31 @@ interface AudioTileProps {
   audio: AudioFile;
 }
 
-export default function AudioTile({ audio }: AudioTileProps) {
+function AudioTile({ audio }: AudioTileProps) {
   const { user } = useAuth();
   const [isPlayerVisible, setIsPlayerVisible] = useState(false);
   const [audioSrc, setAudioSrc] = useState<string | null>(null);
   const [isLoadingUrl, setIsLoadingUrl] = useState(false);
   const [errorUrl, setErrorUrl] = useState<string | null>(null);
 
-  const togglePlayer = async () => {
+  // useCallbackでトグル関数をメモ化
+  const togglePlayer = useCallback(async () => {
     if (!user) {
       console.log("Please log in to play audio.");
       setIsPlayerVisible(false);
       return;
     }
 
+    // プレイヤーを閉じる場合は早期リターン
     if (isPlayerVisible) {
       setIsPlayerVisible(false);
       setAudioSrc(null);
+      return;
+    }
+
+    // すでにURLが取得済みの場合は再取得しない
+    if (audioSrc) {
+      setIsPlayerVisible(true);
       return;
     }
 
@@ -61,6 +69,7 @@ export default function AudioTile({ audio }: AudioTileProps) {
     const filenameToUse = audio.filename;
 
     try {
+      // 1時間有効なURLを取得（有効期限を長めに設定）
       const signedUrl = await createSignedAudioUrl(filenameToUse, 3600);
       if (signedUrl) {
         setAudioSrc(signedUrl);
@@ -74,7 +83,7 @@ export default function AudioTile({ audio }: AudioTileProps) {
     } finally {
       setIsLoadingUrl(false);
     }
-  };
+  }, [user, isPlayerVisible, audioSrc, audio.filename]);
 
   const displayDate = audio.created_at ? formatDate(audio.created_at) : "日付不明";
   const displayDuration = typeof audio.duration === 'number' ? formatDuration(audio.duration) : "時間不明";
@@ -157,4 +166,7 @@ export default function AudioTile({ audio }: AudioTileProps) {
       )}
     </div>
   );
-} 
+}
+
+// コンポーネントをメモ化してリレンダリングを最適化
+export default memo(AudioTile); 
