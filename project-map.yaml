@@ -54,8 +54,11 @@ files:
       - '@/utils/toastUtils:{showErrorToast,showLoadingToast,updateToast}'
       - '@/contexts/AuthContext:{useAuth}'
       - next/link:{Link}
+      - '@/utils/supabase:{supabase,AudioFile}'
+      - uuid:{v4 as uuidv4}
     interfaces: []
     methods:
+      - 'getAudioDuration(file: File)'
       - UploadPage()
       - 'handleFileSelect(selectedFile: File)'
       - validateForm()
