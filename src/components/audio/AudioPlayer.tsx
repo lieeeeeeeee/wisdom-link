@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, memo, useCallback } from "react";
 import { showInfoToast } from "@/utils/toastUtils";
 
 interface AudioPlayerProps {
@@ -8,37 +8,58 @@ interface AudioPlayerProps {
   title: string;
 }
 
-export default function AudioPlayer({ src, title }: AudioPlayerProps) {
+function AudioPlayer({ src, title }: AudioPlayerProps) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [volume, setVolume] = useState(1);
-
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
-
-    const updateTime = () => setCurrentTime(audio.currentTime);
-    const updateDuration = () => setDuration(audio.duration);
-    const updatePlayState = () => {
-      const playing = !audio.paused;
+  
+  // メモ化したイベントハンドラを作成
+  const updateTime = useCallback(() => {
+    if (audioRef.current) {
+      setCurrentTime(audioRef.current.currentTime);
+    }
+  }, []);
+  
+  const updateDuration = useCallback(() => {
+    if (audioRef.current) {
+      setDuration(audioRef.current.duration);
+    }
+  }, []);
+  
+  const updatePlayState = useCallback(() => {
+    if (audioRef.current) {
+      const playing = !audioRef.current.paused;
       setIsPlaying(playing);
       if (playing) {
         showInfoToast(`「${title}」を再生中`);
       }
-    };
-    const handleEnd = () => {
-      setIsPlaying(false);
-      showInfoToast(`「${title}」の再生が完了しました`);
-    };
+    }
+  }, [title]);
+  
+  const handleEnd = useCallback(() => {
+    setIsPlaying(false);
+    showInfoToast(`「${title}」の再生が完了しました`);
+  }, [title]);
 
+  // srcが変更されたときだけイベントリスナーを再設定
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    // ソースが変更されたら現在の再生状態をリセット
+    setCurrentTime(0);
+    setIsPlaying(false);
+    
+    // イベントリスナーを追加
     audio.addEventListener("timeupdate", updateTime);
     audio.addEventListener("durationchange", updateDuration);
     audio.addEventListener("play", updatePlayState);
     audio.addEventListener("pause", updatePlayState);
     audio.addEventListener("ended", handleEnd);
 
+    // クリーンアップ関数
     return () => {
       audio.removeEventListener("timeupdate", updateTime);
       audio.removeEventListener("durationchange", updateDuration);
@@ -46,9 +67,17 @@ export default function AudioPlayer({ src, title }: AudioPlayerProps) {
       audio.removeEventListener("pause", updatePlayState);
       audio.removeEventListener("ended", handleEnd);
     };
-  }, [title]);
+  }, [src, updateTime, updateDuration, updatePlayState, handleEnd]);
 
-  const togglePlay = () => {
+  // ボリューム設定を一度だけ適用
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (audio) {
+      audio.volume = volume;
+    }
+  }, [volume]);
+
+  const togglePlay = useCallback(() => {
     const audio = audioRef.current;
     if (!audio) return;
 
@@ -60,29 +89,26 @@ export default function AudioPlayer({ src, title }: AudioPlayerProps) {
         showInfoToast("音声ファイルの再生中にエラーが発生しました");
       });
     }
-  };
+  }, [isPlaying]);
 
-  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleVolumeChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const newVolume = parseFloat(e.target.value);
     setVolume(newVolume);
-    if (audioRef.current) {
-      audioRef.current.volume = newVolume;
-    }
-  };
+  }, []);
 
-  const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSeek = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const seekTime = parseFloat(e.target.value);
     setCurrentTime(seekTime);
     if (audioRef.current) {
       audioRef.current.currentTime = seekTime;
     }
-  };
+  }, []);
 
-  const formatTime = (time: number): string => {
+  const formatTime = useCallback((time: number): string => {
     const minutes = Math.floor(time / 60);
     const seconds = Math.floor(time % 60);
     return `${minutes}:${seconds.toString().padStart(2, "0")}`;
-  };
+  }, []);
 
   return (
     <div className="bg-gray-50 dark:bg-gray-900 p-3 rounded-md">
@@ -174,4 +200,7 @@ export default function AudioPlayer({ src, title }: AudioPlayerProps) {
       </div>
     </div>
   );
-} 
+}
+
+// コンポーネントをメモ化して不要な再レンダリングを防止
+export default memo(AudioPlayer); 
