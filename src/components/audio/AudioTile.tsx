@@ -2,6 +2,8 @@ import { useState, useCallback, memo, useRef, useEffect } from "react";
 import { createSignedAudioUrl, AudioFile } from "@/utils/supabase";
 import { useAuth } from "@/contexts/AuthContext";
 import { showInfoToast } from "@/utils/toastUtils";
+import AudioDropDownMenu from "./AudioDropDownMenu";
+import AudioPlayerControls from "./AudioPlayerControls";
 
 // 日付フォーマット関数
 function formatDate(dateString: string): string {
@@ -11,13 +13,6 @@ function formatDate(dateString: string): string {
     month: "short",
     day: "numeric",
   });
-}
-
-// 時間フォーマット関数
-function formatDuration(seconds: number): string {
-  const minutes = Math.floor(seconds / 60);
-  const remainingSeconds = Math.floor(seconds % 60);
-  return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
 }
 
 // ファイルサイズフォーマット関数
@@ -176,20 +171,18 @@ function AudioTile({ audio }: AudioTileProps) {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    setIsMenuOpen(false);
   }, [audioSrc, audio.title]);
 
   // 再生速度変更
   const changePlaybackRate = useCallback((rate: number) => {
     setPlaybackRate(rate);
-    setIsMenuOpen(false);
   }, []);
 
   const displayDate = audio.created_at ? formatDate(audio.created_at) : "日付不明";
   const displaySize = typeof audio.size === 'number' ? formatFileSize(audio.size) : "サイズ不明";
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow">
       <div className="p-4">
         <div className="flex justify-between items-start mb-2">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white line-clamp-1">
@@ -207,35 +200,14 @@ function AudioTile({ audio }: AudioTileProps) {
               </svg>
             </button>
 
-            {/* ドロップダウンメニュー */}
-            {isMenuOpen && (
-              <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg z-10 border border-gray-200 dark:border-gray-700">
-                <div className="py-1">
-                  <button
-                    onClick={handleDownload}
-                    className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
-                    </svg>
-                    ダウンロード
-                  </button>
-                  
-                  <div className="border-t border-gray-200 dark:border-gray-700 my-1"></div>
-                  
-                  <p className="px-4 py-1 text-xs text-gray-500 dark:text-gray-400">再生速度</p>
-                  {[0.5, 0.75, 1.0, 1.25, 1.5, 2.0].map((rate) => (
-                    <button
-                      key={rate}
-                      onClick={() => changePlaybackRate(rate)}
-                      className={`w-full text-left px-4 py-1 text-sm ${playbackRate === rate ? 'text-blue-600 dark:text-blue-400' : 'text-gray-700 dark:text-gray-200'} hover:bg-gray-100 dark:hover:bg-gray-700`}
-                    >
-                      {rate}x
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
+            {/* 新しいAudioDropDownMenuコンポーネントを使用 */}
+            <AudioDropDownMenu
+              isOpen={isMenuOpen}
+              onClose={() => setIsMenuOpen(false)}
+              onDownload={handleDownload}
+              onChangePlaybackRate={changePlaybackRate}
+              currentPlaybackRate={playbackRate}
+            />
           </div>
         </div>
       </div>
@@ -247,48 +219,15 @@ function AudioTile({ audio }: AudioTileProps) {
         {audioSrc && !isLoadingUrl && !errorUrl && (
           <div className="relative">
             <audio ref={audioRef} src={audioSrc} preload="metadata" />
-
-            <div className="flex flex-col">
-              {/* シークバーと再生ボタン */}
-              <div className="flex items-center space-x-2 mb-3">
-                <button
-                  onClick={togglePlay}
-                  className="p-2 rounded-full bg-blue-600 hover:bg-blue-700 focus:outline-none text-white flex-shrink-0"
-                >
-                  {isPlaying ? (
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 24 24" fill="currentColor">
-                      <path fillRule="evenodd" d="M6.75 5.25a.75.75 0 01.75-.75H9a.75.75 0 01.75.75v13.5a.75.75 0 01-.75.75H7.5a.75.75 0 01-.75-.75V5.25zm7-1a.75.75 0 00-.75.75v13.5a.75.75 0 00.75.75H16.5a.75.75 0 00.75-.75V5.25a.75.75 0 00-.75-.75H13.75z" clipRule="evenodd" />
-                    </svg>
-                  ) : (
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 24 24" fill="currentColor">
-                      <path fillRule="evenodd" d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653z" clipRule="evenodd" />
-                    </svg>
-                  )}
-                </button>
-
-                <input
-                  type="range"
-                  className="flex-grow h-1 cursor-pointer accent-blue-600 bg-gray-200 dark:bg-gray-700"
-                  min="0"
-                  max={audioDuration || 0}
-                  step="0.01"
-                  value={currentTime}
-                  onChange={handleSeek}
-                />
-              </div>
-              
-              {/* 音声ファイル情報 */}
-              <div className="flex justify-between items-center text-gray-500 dark:text-gray-400 text-xs">
-                <div className="flex items-center">
-                  <span>{displayDate}</span>
-                  <span className="mx-2">•</span>
-                  <span>{displaySize}</span>
-                </div>
-                <div className="text-xs">
-                  {formatDuration(currentTime)} / {formatDuration(audioDuration)}
-                </div>
-              </div>
-            </div>
+            <AudioPlayerControls
+              isPlaying={isPlaying}
+              currentTime={currentTime}
+              duration={audioDuration}
+              onPlayPause={togglePlay}
+              onSeek={handleSeek}
+              displayDate={displayDate}
+              displaySize={displaySize}
+            />
           </div>
         )}
         {!audioSrc && !isLoadingUrl && !errorUrl && !user && (
