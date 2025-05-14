@@ -1,7 +1,8 @@
-import { AudioItem } from "@/app/audios/mockData";
 import Link from "next/link";
 import { useState } from "react";
 import AudioPlayer from "./AudioPlayer";
+import { createSignedAudioUrl, AudioFile } from "@/utils/supabase";
+import { useAuth } from "@/contexts/AuthContext";
 
 // 日付フォーマット関数
 function formatDate(dateString: string): string {
@@ -22,20 +23,62 @@ function formatDuration(seconds: number): string {
 
 // ファイルサイズフォーマット関数
 function formatFileSize(bytes: number): string {
-  const mb = bytes / 1000000;
-  return `${mb.toFixed(1)} MB`;
+  if (bytes === 0) return "0 B";
+  const k = 1024;
+  const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
 }
 
 interface AudioTileProps {
-  audio: AudioItem;
+  audio: AudioFile;
 }
 
 export default function AudioTile({ audio }: AudioTileProps) {
+  const { user } = useAuth();
   const [isPlayerVisible, setIsPlayerVisible] = useState(false);
+  const [audioSrc, setAudioSrc] = useState<string | null>(null);
+  const [isLoadingUrl, setIsLoadingUrl] = useState(false);
+  const [errorUrl, setErrorUrl] = useState<string | null>(null);
 
-  const togglePlayer = () => {
-    setIsPlayerVisible(!isPlayerVisible);
+  const togglePlayer = async () => {
+    if (!user) {
+      console.log("Please log in to play audio.");
+      setIsPlayerVisible(false);
+      return;
+    }
+
+    if (isPlayerVisible) {
+      setIsPlayerVisible(false);
+      setAudioSrc(null);
+      return;
+    }
+
+    setIsPlayerVisible(true);
+    setIsLoadingUrl(true);
+    setErrorUrl(null);
+
+    const filenameToUse = audio.filename;
+
+    try {
+      const signedUrl = await createSignedAudioUrl(filenameToUse, 3600);
+      if (signedUrl) {
+        setAudioSrc(signedUrl);
+      } else {
+        setErrorUrl("音声URLの取得に失敗しました。");
+        console.error("Failed to get signed URL for:", filenameToUse);
+      }
+    } catch (e) {
+      setErrorUrl("音声URLの取得中にエラーが発生しました。");
+      console.error("Error getting signed URL:", e);
+    } finally {
+      setIsLoadingUrl(false);
+    }
   };
+
+  const displayDate = audio.created_at ? formatDate(audio.created_at) : "日付不明";
+  const displayDuration = typeof audio.duration === 'number' ? formatDuration(audio.duration) : "時間不明";
+  const displaySize = typeof audio.size === 'number' ? formatFileSize(audio.size) : "サイズ不明";
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
@@ -44,12 +87,12 @@ export default function AudioTile({ audio }: AudioTileProps) {
           {audio.title}
         </h3>
         
-        <div className="flex items-center text-gray-500 dark:text-gray-400 text-sm mb-3">
-          <span>{formatDate(audio.createdAt)}</span>
+        <div className="flex items-center text-gray-500 dark:text-gray-400 text-sm mb-3 flex-wrap">
+          <span>{displayDate}</span>
           <span className="mx-2">•</span>
-          <span>{formatDuration(audio.duration)}</span>
-          <span className="mx-2">•</span>
-          <span>{formatFileSize(audio.size)}</span>
+          <span>{displayDuration}</span>
+          <span className="mx-2 hidden sm:inline">•</span>
+          <span className="hidden sm:inline">{displaySize}</span>
         </div>
         
         <div className="flex justify-between items-center">
@@ -95,16 +138,23 @@ export default function AudioTile({ audio }: AudioTileProps) {
             </svg>
           </Link>
         </div>
+      </div>
 
-        {isPlayerVisible && (
-          <div className="mt-4">
+      {isPlayerVisible && (
+        <div className="mt-4 p-4 border-t dark:border-gray-700">
+          {isLoadingUrl && <p className="text-sm text-gray-500 dark:text-gray-400">音声情報を読み込み中...</p>}
+          {errorUrl && <p className="text-sm text-red-500">{errorUrl}</p>}
+          {audioSrc && !isLoadingUrl && !errorUrl && (
             <AudioPlayer 
-              src={`/audio/sample.wav`} // 実際のAPIが実装されたらaudio.urlなどを使用
+              src={audioSrc}
               title={audio.title}
             />
-          </div>
-        )}
-      </div>
+          )}
+          {!audioSrc && !isLoadingUrl && !errorUrl && !user && (
+             <p className="text-sm text-yellow-500">音声を再生するにはログインしてください。</p>
+          )}
+        </div>
+      )}
     </div>
   );
 } 
