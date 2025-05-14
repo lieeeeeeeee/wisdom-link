@@ -166,6 +166,27 @@ files:
     purpose: ''
     state: []
     type: module
+  - path: src/components/audio/AudioPlayer.tsx
+    exports:
+      - default:function
+    imports:
+      - react:{useState,useRef,useEffect,useCallback}
+      - ./AudioPlayerControls:{AudioPlayerControls}
+    interfaces:
+      - AudioPlayerProps
+    methods:
+      - 'AudioPlayer({ src, title }: AudioPlayerProps)'
+    props:
+      - src:unknown
+      - title :unknown
+    purpose: ''
+    state:
+      - isPlaying:unknown
+      - currentTime:unknown
+      - audioDuration:unknown
+      - playbackRate:unknown
+      - isError:unknown
+    type: module
   - path: src/components/audio/AudioPlayerControls.tsx
     exports:
       - default:variable
