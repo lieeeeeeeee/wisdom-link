@@ -19,30 +19,6 @@ files:
     purpose: ''
     state: []
     type: module
-  - path: src/app/audios/page.tsx
-    exports:
-      - default:function
-    imports:
-      - react:{useState,useEffect,useCallback,useRef}
-      - '@/components/layout/Layout:{Layout}'
-      - '@/components/audio/AudioTile:{AudioTile}'
-      - '@/components/audio/AudioTileSkeleton:{AudioTileSkeleton}'
-      - '@/contexts/AuthContext:{useAuth}'
-      - next/link:{Link}
-      - '@/utils/supabase:{supabase,AudioFile}'
-      - '@/utils/toastUtils:{showErrorToast}'
-    interfaces: []
-    methods:
-      - AudiosPage()
-      - handleLoadMore()
-    props: []
-    purpose: ''
-    state:
-      - audios:AudioFile[]
-      - loading:unknown
-      - loadingMore:unknown
-      - allDataLoaded:unknown
-    type: module
   - path: src/app/audios/upload/page.tsx
     exports:
       - default:function
@@ -104,13 +80,25 @@ files:
     exports:
       - default:function
     imports:
+      - react:{useState,useEffect,useCallback,useRef}
       - '@/components/layout/Layout:{Layout}'
+      - '@/components/audio/AudioTile:{AudioTile}'
+      - '@/components/audio/AudioTileSkeleton:{AudioTileSkeleton}'
+      - '@/contexts/AuthContext:{useAuth}'
+      - next/link:{Link}
+      - '@/utils/supabase:{supabase,AudioFile}'
+      - '@/utils/toastUtils:{showErrorToast}'
     interfaces: []
     methods:
-      - Home()
+      - HomePage()
+      - handleLoadMore()
     props: []
     purpose: ''
-    state: []
+    state:
+      - audios:AudioFile[]
+      - loading:unknown
+      - loadingMore:unknown
+      - allDataLoaded:unknown
     type: module
   - path: src/app/player/page.tsx
     exports:
