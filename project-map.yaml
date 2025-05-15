@@ -63,6 +63,7 @@ files:
       - react-hot-toast:{Toaster}
       - ./globals.css
       - '@/contexts/AuthContext:{AuthProvider}'
+      - '@/contexts/AudioPlayerContext:{AudioPlayerProvider}'
     interfaces: []
     methods:
       - |-
@@ -208,6 +209,7 @@ files:
       - '@/utils/toastUtils:{showInfoToast}'
       - ./AudioDropDownMenu:{AudioDropDownMenu}
       - ./AudioPlayerControls:{AudioPlayerControls}
+      - '@/contexts/AudioPlayerContext:{useAudioPlayer}'
     interfaces:
       - AudioTileProps
     methods:
@@ -215,13 +217,13 @@ files:
       - 'formatFileSize(bytes: number)'
       - 'AudioTile({ audio }: AudioTileProps)'
       - fetchAudioUrl()
+      - stopThisAudio()
     props: []
     purpose: ''
     state:
       - audioSrc:string | null
       - isLoadingUrl:unknown
       - errorUrl:string | null
-      - isPlaying:unknown
       - currentTime:unknown
       - audioDuration:unknown
       - isMenuOpen:unknown
@@ -321,6 +323,24 @@ files:
     state:
       - isDragging:unknown
       - error:string | null
+    type: module
+  - path: src/contexts/AudioPlayerContext.tsx
+    exports:
+      - AudioPlayerProvider:variable
+      - useAudioPlayer:variable
+    imports:
+      - react:{React,createContext,useContext,useState,useCallback,ReactNode}
+    interfaces:
+      - AudioPlayerContextType
+    methods:
+      - 'AudioPlayerProvider({ children }: { children: ReactNode })'
+      - useAudioPlayer()
+    props:
+      - children :unknown
+    purpose: ''
+    state:
+      - playingAudioId:string | null
+      - stopCurrentAudioFunction:(() => void) | null
     type: module
   - path: src/contexts/AuthContext.tsx
     exports:
