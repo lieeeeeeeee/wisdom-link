@@ -22,7 +22,7 @@ export default function Navbar() {
           <div className="flex items-center gap-4">
             <Link
               href="/audios/upload"
-              className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              className="flex items-center gap-2 p-2 rounded-full border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-sm font-medium"
               aria-label="アップロード"
             >
               <svg
@@ -31,7 +31,7 @@ export default function Navbar() {
                 viewBox="0 0 24 24"
                 strokeWidth={1.5}
                 stroke="currentColor"
-                className="w-6 h-6"
+                className="w-5 h-5"
               >
                 <path
                   strokeLinecap="round"
@@ -39,6 +39,7 @@ export default function Navbar() {
                   d="M12 4.5v15m7.5-7.5h-15"
                 />
               </svg>
+              <span>アップロード</span>
             </Link>
             {isLoading ? (
               <div className="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-full animate-pulse" />
