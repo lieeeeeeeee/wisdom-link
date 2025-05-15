@@ -58,7 +58,7 @@ export default function UserMenu() {
 
       {isOpen && (
         <div
-          className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg pt-1 ring-1 ring-black ring-opacity-5 z-20"
+          className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg pt-1 ring-1 ring-gray-300 dark:ring-gray-700 ring-opacity-1 z-20"
           role="menu"
           aria-orientation="vertical"
           aria-labelledby="user-menu-button"
