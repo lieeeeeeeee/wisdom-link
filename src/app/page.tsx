@@ -141,7 +141,6 @@ export default function HomePage() { // Function name changed to HomePage
   return (
     <Layout>
       <div className="pb-8">
-        <h1 className="text-2xl font-bold mb-6">音声ライブラリ</h1>
 
         {audios.length === 0 && !loading && (
           <div className="text-center py-10">
