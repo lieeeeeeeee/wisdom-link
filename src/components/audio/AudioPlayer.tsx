@@ -19,7 +19,7 @@ export default function AudioPlayer({ src, title }: AudioPlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [audioDuration, setAudioDuration] = useState(0);
-  const [playbackRate, setPlaybackRate] = useState(1.0);
+  const [playbackRate] = useState(1.0);
   const [isError, setIsError] = useState(false);
 
   // タイムアップデート処理

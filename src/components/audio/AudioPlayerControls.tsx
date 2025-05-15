@@ -1,5 +1,3 @@
-import { useCallback } from "react";
-
 // 時間フォーマット関数
 function formatDuration(seconds: number): string {
   const minutes = Math.floor(seconds / 60);

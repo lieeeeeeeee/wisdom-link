@@ -161,18 +161,6 @@ function AudioTile({ audio }: AudioTileProps) {
     setIsMenuOpen(!isMenuOpen);
   }, [isMenuOpen]);
 
-  // ファイルダウンロード
-  const handleDownload = useCallback(() => {
-    if (!audioSrc) return;
-    
-    const link = document.createElement('a');
-    link.href = audioSrc;
-    link.download = audio.title || 'audio-file';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  }, [audioSrc, audio.title]);
-
   // 再生速度変更
   const changePlaybackRate = useCallback((rate: number) => {
     setPlaybackRate(rate);
