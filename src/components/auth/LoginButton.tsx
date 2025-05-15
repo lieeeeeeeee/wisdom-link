@@ -11,9 +11,16 @@ const LoginButton: React.FC = () => {
   }
 
   if (user) {
+    const avatarUrl = user.user_metadata?.avatar_url;
     return (
       <div className="flex items-center gap-2">
-        <span className="text-sm">{user.email}</span>
+        {avatarUrl && (
+          <img
+            src={avatarUrl}
+            alt="ユーザーアバター"
+            className="w-8 h-8 rounded-full"
+          />
+        )}
         <button onClick={signOut} className="btn btn-outline btn-sm">
           ログアウト
         </button>
