@@ -20,7 +20,7 @@ export default function UserAvatar({ user, onClick, size = 32 }: UserAvatarProps
   return (
     <button
       onClick={onClick}
-      className="flex items-center justify-center rounded-full overflow-hidden focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+      className="flex items-center justify-center rounded-full overflow-hidden focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-gray-800 focus:ring-blue-500 hover:ring-2 hover:ring-offset-2 dark:hover:ring-offset-gray-800 hover:ring-blue-500"
       aria-label="ユーザーメニューを開く"
       style={{ width: size, height: size }}
     >
