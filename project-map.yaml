@@ -81,25 +81,15 @@ files:
     exports:
       - default:function
     imports:
-      - react:{useState,useEffect,useCallback,useRef}
-      - '@/components/layout/Layout:{Layout}'
-      - '@/components/audio/AudioTile:{AudioTile}'
-      - '@/components/audio/AudioTileSkeleton:{AudioTileSkeleton}'
+      - '@/components/audio/AudioList:{AudioList}'
       - '@/contexts/AuthContext:{useAuth}'
-      - next/link:{Link}
-      - '@/utils/supabase:{supabase,AudioFile}'
-      - '@/utils/toastUtils:{showErrorToast}'
+      - '@/components/layout/Layout:{Layout}'
     interfaces: []
     methods:
       - HomePage()
-      - handleLoadMore()
     props: []
     purpose: ''
-    state:
-      - audios:AudioFile[]
-      - loading:unknown
-      - loadingMore:unknown
-      - allDataLoaded:unknown
+    state: []
     type: module
   - path: src/app/player/page.tsx
     exports:
@@ -134,6 +124,19 @@ files:
     state:
       - loadingToastId:string | undefined
     type: module
+  - path: src/app/user/audios/page.tsx
+    exports:
+      - default:function
+    imports:
+      - '@/components/audio/AudioList:{AudioList}'
+      - '@/contexts/AuthContext:{useAuth}'
+    interfaces: []
+    methods:
+      - UserAudiosPage()
+    props: []
+    purpose: ''
+    state: []
+    type: module
   - path: src/components/audio/AudioDropDownMenu.tsx
     exports:
       - default:variable
@@ -155,6 +158,33 @@ files:
     props: []
     purpose: ''
     state: []
+    type: module
+  - path: src/components/audio/AudioList.tsx
+    exports:
+      - default:function
+    imports:
+      - react:{useState,useEffect,useCallback,useRef}
+      - '@/components/layout/Layout:{Layout}'
+      - '@/components/audio/AudioTile:{AudioTile}'
+      - '@/components/audio/AudioTileSkeleton:{AudioTileSkeleton}'
+      - '@/contexts/AuthContext:{useAuth}'
+      - next/link:{Link}
+      - '@/utils/supabase:{supabase,AudioFile}'
+      - '@/utils/toastUtils:{showErrorToast}'
+    interfaces:
+      - AudioListProps
+    methods:
+      - 'AudioList({ pageTitle, userId }: AudioListProps)'
+      - handleLoadMore()
+    props:
+      - pageTitle:unknown
+      - userId :unknown
+    purpose: ''
+    state:
+      - audios:AudioFile[]
+      - loading:unknown
+      - loadingMore:unknown
+      - allDataLoaded:unknown
     type: module
   - path: src/components/audio/AudioPlayer.tsx
     exports:
@@ -260,6 +290,7 @@ files:
       - react:{useState,useRef,useEffect}
       - next/image:{Image}
       - '@/contexts/AuthContext:{useAuth}'
+      - next/navigation:{useRouter}
     interfaces: []
     methods:
       - UserMenu()
