@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { Toaster } from 'react-hot-toast';
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { AudioPlayerProvider } from "@/contexts/AudioPlayerContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,32 +31,34 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <AuthProvider>
-          {children}
-          <Toaster 
-            position="bottom-right"
-            toastOptions={{
-              duration: 4000,
-              style: {
-                background: '#ffffff',
-                color: '#333333',
-                padding: '16px',
-                borderRadius: '8px',
-                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-              },
-              success: {
-                iconTheme: {
-                  primary: '#4ade80',
-                  secondary: '#ffffff',
+          <AudioPlayerProvider>
+            {children}
+            <Toaster 
+              position="bottom-right"
+              toastOptions={{
+                duration: 4000,
+                style: {
+                  background: '#ffffff',
+                  color: '#333333',
+                  padding: '16px',
+                  borderRadius: '8px',
+                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
                 },
-              },
-              error: {
-                iconTheme: {
-                  primary: '#f43f5e',
-                  secondary: '#ffffff',
+                success: {
+                  iconTheme: {
+                    primary: '#4ade80',
+                    secondary: '#ffffff',
+                  },
                 },
-              },
-            }}
-          />
+                error: {
+                  iconTheme: {
+                    primary: '#f43f5e',
+                    secondary: '#ffffff',
+                  },
+                },
+              }}
+            />
+          </AudioPlayerProvider>
         </AuthProvider>
       </body>
     </html>
