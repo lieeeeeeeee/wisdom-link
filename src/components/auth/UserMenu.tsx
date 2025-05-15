@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { useAuth } from "@/contexts/AuthContext";
+import { useRouter } from "next/navigation";
 
 /**
  * Renders a user menu component that displays the user's avatar and a dropdown menu
@@ -15,6 +16,7 @@ export default function UserMenu() {
   const { user, signOut } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
@@ -77,14 +79,16 @@ export default function UserMenu() {
             </p>
           </div>
           {/* 今後ここに追加のメニュー項目を配置します */}
-          {/* <Link
-            href="/my-audios" // 例: 自分が投稿した音声一覧ページ
-            className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+          <button
+            onClick={() => {
+              router.push('/user/audios');
+              setIsOpen(false);
+            }}
+            className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
             role="menuitem"
-            onClick={() => setIsOpen(false)}
           >
             自分の投稿
-          </Link> */}
+          </button>
           <button
             onClick={async () => {
               await signOut();
