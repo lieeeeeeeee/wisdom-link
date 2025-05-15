@@ -393,6 +393,7 @@ files:
       - react-hot-toast:{toast,Renderable}
     interfaces: []
     methods:
+      - isLocalDevelopment()
       - 'showSuccessToast(message: string)'
       - 'showErrorToast(message: string)'
       - 'showInfoToast(message: string)'
