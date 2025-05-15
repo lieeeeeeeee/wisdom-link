@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useEffect, useRef } from "react";
 
 interface AudioDropDownMenuProps {
   isOpen: boolean;
@@ -17,6 +17,8 @@ const AudioDropDownMenu = ({
   onChangePlaybackRate,
   currentPlaybackRate,
 }: AudioDropDownMenuProps) => {
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
   // ダウンロード処理を画面遷移なしで実行
   const handleDownload = useCallback(() => {
     if (!audioUrl) return;
@@ -49,10 +51,32 @@ const AudioDropDownMenu = ({
     onClose();
   }, [onChangePlaybackRate, onClose]);
 
+  // ドロップダウンメニューの外側をクリックしたときに閉じる処理
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    } else {
+      document.removeEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   return (
-    <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg z-50 border border-gray-200 dark:border-gray-700">
+    <div 
+      ref={dropdownRef}
+      className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg z-50 border border-gray-200 dark:border-gray-700"
+    >
       <div className="py-1">
         <button
           onClick={handleDownload}

@@ -137,7 +137,7 @@ files:
     exports:
       - default:variable
     imports:
-      - react:{useCallback}
+      - react:{useCallback,useEffect,useRef}
     interfaces:
       - AudioDropDownMenuProps
     methods:
@@ -150,6 +150,7 @@ files:
           onChangePlaybackRate,
           currentPlaybackRate,
         }: AudioDropDownMenuProps)
+      - 'handleClickOutside(event: MouseEvent)'
     props: []
     purpose: ''
     state: []
