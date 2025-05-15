@@ -258,7 +258,6 @@ files:
       - react:{useState,useRef,useEffect}
       - next/image:{Image}
       - '@/contexts/AuthContext:{useAuth}'
-      - next/link:{Link}
     interfaces: []
     methods:
       - UserMenu()

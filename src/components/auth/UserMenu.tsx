@@ -3,7 +3,6 @@
 import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { useAuth } from "@/contexts/AuthContext";
-import Link from "next/link";
 
 /**
  * Renders a user menu component that displays the user's avatar and a dropdown menu
