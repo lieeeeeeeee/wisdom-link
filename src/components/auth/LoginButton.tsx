@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import Image from 'next/image';
 
 const LoginButton: React.FC = () => {
   const { user, signInWithGoogle, signOut, isLoading } = useAuth();
@@ -15,10 +16,12 @@ const LoginButton: React.FC = () => {
     return (
       <div className="flex items-center gap-2">
         {avatarUrl && (
-          <img
+          <Image
             src={avatarUrl}
             alt="ユーザーアバター"
-            className="w-8 h-8 rounded-full"
+            width={32}
+            height={32}
+            className="rounded-full"
           />
         )}
         <button onClick={signOut} className="btn btn-outline btn-sm">
