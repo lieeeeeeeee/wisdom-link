@@ -15,13 +15,13 @@ export default function HomePage() {
     return (
       <Layout>
         <div className="max-w-2xl mx-auto text-center py-12">
-          <h1 className="text-2xl font-bold mb-6">音声ライブラリ</h1>
-          <p className="mb-4">音声ライブラリを閲覧するにはログインが必要です。</p>
+          <h1 className="text-2xl font-bold mb-6">みんなの投稿</h1>
+          <p className="mb-4">みんなの投稿を閲覧するにはログインが必要です。</p>
           <p className="mb-4">ナビゲーションバーからログインしてください。</p> 
         </div>
       </Layout>
     );
   }
 
-  return <AudioList pageTitle="音声ライブラリ" />;
+  return <AudioList pageTitle="みんなの投稿" />;
 } 
