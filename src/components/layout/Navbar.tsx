@@ -18,18 +18,7 @@ export default function Navbar() {
               WisdomLink
             </Link>
           </div>
-          
-          {/* ナビゲーションリンク */}
-          <div className="hidden md:flex space-x-4">
-            <Link
-              href="/audios"
-              className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-            >
-              音声ライブラリ
-            </Link>
-          </div>
-          
-          {/* 右側の要素 (アップロードボタンとログイン/ユーザーメニュー) */}
+
           <div className="flex items-center gap-4">
             <Link
               href="/audios/upload"
