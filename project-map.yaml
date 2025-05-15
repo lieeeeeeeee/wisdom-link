@@ -251,17 +251,34 @@ files:
     type: module
   - path: src/components/auth/LoginButton.tsx
     exports:
-      - default:variable
+      - default:function
     imports:
       - react:{React}
       - '@/contexts/AuthContext:{useAuth}'
-      - next/image:{Image}
     interfaces: []
     methods:
       - LoginButton()
     props: []
     purpose: ''
     state: []
+    type: module
+  - path: src/components/auth/UserMenu.tsx
+    exports:
+      - default:function
+    imports:
+      - react:{useState,useRef,useEffect}
+      - next/image:{Image}
+      - '@/contexts/AuthContext:{useAuth}'
+      - next/link:{Link}
+    interfaces: []
+    methods:
+      - UserMenu()
+      - toggleMenu()
+      - 'handleClickOutside(event: MouseEvent)'
+    props: []
+    purpose: ''
+    state:
+      - isOpen:unknown
     type: module
   - path: src/components/layout/Layout.tsx
     exports:
@@ -283,6 +300,8 @@ files:
     imports:
       - next/link:{Link}
       - '@/components/auth/LoginButton:{LoginButton}'
+      - '@/components/auth/UserMenu:{UserMenu}'
+      - '@/contexts/AuthContext:{useAuth}'
     interfaces: []
     methods:
       - Navbar()
