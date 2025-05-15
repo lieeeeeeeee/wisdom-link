@@ -137,7 +137,7 @@ export default function UploadPage() {
       }
       
       updateToast(toastId, "success", `「${title}」が正常にアップロードされました`);
-      router.push("/audios");
+      router.push('/');
 
     } catch (error) {
       console.error("Error during submission process:", error);
