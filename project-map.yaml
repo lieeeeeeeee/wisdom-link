@@ -283,6 +283,26 @@ files:
     purpose: ''
     state: []
     type: module
+  - path: src/components/auth/LogoutConfirmationDialog.tsx
+    exports:
+      - default:function
+    imports: []
+    interfaces:
+      - LogoutConfirmationDialogProps
+    methods:
+      - |-
+        LogoutConfirmationDialog({
+          isOpen,
+          onClose,
+          onConfirm,
+        }: LogoutConfirmationDialogProps)
+    props:
+      - isOpen:unknown
+      - onClose:unknown
+      - onConfirm:unknown
+    purpose: ''
+    state: []
+    type: module
   - path: src/components/auth/UserMenu.tsx
     exports:
       - default:function
@@ -291,15 +311,19 @@ files:
       - next/image:{Image}
       - '@/contexts/AuthContext:{useAuth}'
       - next/navigation:{useRouter}
+      - ./LogoutConfirmationDialog:{LogoutConfirmationDialog}
     interfaces: []
     methods:
       - UserMenu()
       - toggleMenu()
       - 'handleClickOutside(event: MouseEvent)'
+      - handleLogout()
+      - openConfirmDialog()
     props: []
     purpose: ''
     state:
       - isOpen:unknown
+      - showConfirmDialog:unknown
     type: module
   - path: src/components/layout/Layout.tsx
     exports:

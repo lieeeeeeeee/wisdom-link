@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
+import LogoutConfirmationDialog from "./LogoutConfirmationDialog";
 
 /**
  * Renders a user menu component that displays the user's avatar and a dropdown menu
@@ -15,6 +16,7 @@ import { useRouter } from "next/navigation";
 export default function UserMenu() {
   const { user, signOut } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
@@ -38,6 +40,17 @@ export default function UserMenu() {
   if (!user) {
     return null;
   }
+
+  const handleLogout = async () => {
+    await signOut();
+    setShowConfirmDialog(false);
+    setIsOpen(false);
+  };
+
+  const openConfirmDialog = () => {
+    setIsOpen(false);
+    setShowConfirmDialog(true);
+  };
 
   return (
     <div className="relative" ref={menuRef}>
@@ -90,10 +103,7 @@ export default function UserMenu() {
             自分の投稿
           </button>
           <button
-            onClick={async () => {
-              await signOut();
-              setIsOpen(false);
-            }}
+            onClick={openConfirmDialog}
             className="block w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-700 hover:text-red-700 dark:hover:text-red-300 rounded-b-md"
             role="menuitem"
           >
@@ -101,6 +111,12 @@ export default function UserMenu() {
           </button>
         </div>
       )}
+
+      <LogoutConfirmationDialog
+        isOpen={showConfirmDialog}
+        onClose={() => setShowConfirmDialog(false)}
+        onConfirm={handleLogout}
+      />
     </div>
   );
 } 
