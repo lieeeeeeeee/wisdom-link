@@ -4,6 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { showInfoToast } from "@/utils/toastUtils";
 import AudioDropDownMenu from "./AudioDropDownMenu";
 import AudioPlayerControls from "./AudioPlayerControls";
+import { useAudioPlayer } from "@/contexts/AudioPlayerContext";
 
 // 日付フォーマット関数
 function formatDate(dateString: string): string {
@@ -34,11 +35,13 @@ function AudioTile({ audio }: AudioTileProps) {
   const [isLoadingUrl, setIsLoadingUrl] = useState(false);
   const [errorUrl, setErrorUrl] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [audioDuration, setAudioDuration] = useState(0);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [playbackRate, setPlaybackRate] = useState(1.0);
+
+  const { playingAudioId, setPlayingAudio } = useAudioPlayer();
+  const isCurrentAudioPlaying = playingAudioId === audio.id;
 
   // 音声プレーヤー関連の処理をメモ化
   const updateTime = useCallback(() => {
@@ -56,26 +59,33 @@ function AudioTile({ audio }: AudioTileProps) {
   const updatePlayState = useCallback(() => {
     if (audioRef.current) {
       const playing = !audioRef.current.paused;
-      setIsPlaying(playing);
-      if (playing) {
+      if (playing && playingAudioId !== audio.id) {
+        console.warn(`[AudioTile-${audio.id}] Inconsistent play state detected. Global: ${playingAudioId}, Local should be playing.`);
+        audioRef.current.pause();
+      } else if (!playing && playingAudioId === audio.id) {
+        console.log(`[AudioTile-${audio.id}] Playback stopped or paused, clearing global state.`);
+        setPlayingAudio(null);
+      }
+      if (playing && playingAudioId === audio.id) {
         showInfoToast(`「${audio.title}」を再生中`);
       }
     }
-  }, [audio.title]);
+  }, [audio.title, audio.id, playingAudioId, setPlayingAudio]);
   
   const handleEnd = useCallback(() => {
-    setIsPlaying(false);
+    console.log(`[AudioTile-${audio.id}] Audio ended.`);
+    setPlayingAudio(null);
     showInfoToast(`「${audio.title}」の再生が完了しました`);
-  }, [audio.title]);
+  }, [audio.title, audio.id, setPlayingAudio]);
 
   // audioSrcが変更されたときにイベントリスナーを設定
   useEffect(() => {
     const audioElement = audioRef.current;
     if (!audioElement || !audioSrc) return;
 
+    console.log(`[AudioTile-${audio.id}] Setting up event listeners for new audioSrc.`);
     // 再生状態をリセット
     setCurrentTime(0);
-    setIsPlaying(false);
     
     // イベントリスナーを追加
     audioElement.addEventListener("timeupdate", updateTime);
@@ -99,8 +109,20 @@ function AudioTile({ audio }: AudioTileProps) {
     const audioElement = audioRef.current;
     if (audioElement) {
       audioElement.playbackRate = playbackRate;
+      console.log(`[AudioTile-${audio.id}] Playback rate set to ${playbackRate}.`);
     }
-  }, [playbackRate]);
+  }, [playbackRate, audio.id]);
+
+  // グローバルな再生状態の変更を監視
+  useEffect(() => {
+    console.log(`[AudioTile-${audio.id}] Global playingAudioId changed to: ${playingAudioId}. This audio is ${isCurrentAudioPlaying ? 'playing' : 'not playing'}.`);
+    if (audioRef.current) {
+      if (playingAudioId !== audio.id && !audioRef.current.paused) {
+        console.log(`[AudioTile-${audio.id}] Another audio started playing. Pausing this one.`);
+        audioRef.current.pause();
+      }
+    }
+  }, [playingAudioId, audio.id, isCurrentAudioPlaying]);
 
   // コンポーネントがマウントされたときに音声URLを取得
   useEffect(() => {
@@ -117,13 +139,14 @@ function AudioTile({ audio }: AudioTileProps) {
         const signedUrl = await createSignedAudioUrl(audio.filename, 3600);
         if (signedUrl) {
           setAudioSrc(signedUrl);
+          console.log(`[AudioTile-${audio.id}] Successfully fetched signed URL.`);
         } else {
           setErrorUrl("音声URLの取得に失敗しました。");
-          console.error("Failed to get signed URL for:", audio.filename);
+          console.error(`[AudioTile-${audio.id}] Failed to get signed URL for:`, audio.filename);
         }
       } catch (e) {
         setErrorUrl("音声URLの取得中にエラーが発生しました。");
-        console.error("Error getting signed URL:", e);
+        console.error(`[AudioTile-${audio.id}] Error getting signed URL:`, e);
       } finally {
         setIsLoadingUrl(false);
       }
@@ -135,17 +158,33 @@ function AudioTile({ audio }: AudioTileProps) {
   // 再生/一時停止トグル
   const togglePlay = useCallback(() => {
     const audioElement = audioRef.current;
-    if (!audioElement) return;
-
-    if (isPlaying) {
-      audioElement.pause();
-    } else {
-      audioElement.play().catch(error => {
-        console.error("音声再生エラー:", error);
-        showInfoToast("音声ファイルの再生中にエラーが発生しました");
-      });
+    if (!audioElement || !audioSrc) {
+      console.warn(`[AudioTile-${audio.id}] Attempted to toggle play, but audioElement or audioSrc is missing.`);
+      return;
     }
-  }, [isPlaying]);
+
+    const stopThisAudio = () => {
+      if (audioElement) {
+        audioElement.pause();
+        console.log(`[AudioTile-${audio.id}] Audio explicitly stopped by context.`);
+      }
+    };
+
+    if (isCurrentAudioPlaying) {
+      audioElement.pause();
+      setPlayingAudio(null);
+      console.log(`[AudioTile-${audio.id}] Paused audio. Cleared global playing state.`);
+    } else {
+      console.log(`[AudioTile-${audio.id}] Attempting to play. Current global playingAudioId: ${playingAudioId}`);
+      setPlayingAudio(audio.id, stopThisAudio);
+      audioElement.play().catch(error => {
+        console.error(`[AudioTile-${audio.id}] Error playing audio:`, error);
+        showInfoToast("音声ファイルの再生中にエラーが発生しました");
+        setPlayingAudio(null);
+      });
+      console.log(`[AudioTile-${audio.id}] Started playing audio. Set global playing state.`);
+    }
+  }, [audioSrc, audio.id, isCurrentAudioPlaying, setPlayingAudio, playingAudioId]);
 
   // シークバー操作
   const handleSeek = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -209,7 +248,7 @@ function AudioTile({ audio }: AudioTileProps) {
           <div className="relative">
             <audio ref={audioRef} src={audioSrc} preload="metadata" />
             <AudioPlayerControls
-              isPlaying={isPlaying}
+              isPlaying={isCurrentAudioPlaying}
               currentTime={currentTime}
               duration={audioDuration}
               onPlayPause={togglePlay}
