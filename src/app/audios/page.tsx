@@ -66,9 +66,13 @@ export default function AudiosPage() {
           return newAudios;
         });
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error fetching audios:", error);
-      showErrorToast("音声データの取得に失敗しました: " + error.message);
+      if (error instanceof Error) {
+        showErrorToast("音声データの取得に失敗しました: " + error.message);
+      } else {
+        showErrorToast("音声データの取得に失敗しました。不明なエラーです。");
+      }
       setAudios([]);
     } finally {
       setLoading(false);
