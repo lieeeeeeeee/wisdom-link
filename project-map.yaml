@@ -514,3 +514,14 @@ files:
     purpose: ''
     state: []
     type: module
+  - path: tailwind.config.ts
+    exports:
+      - default:variable
+    imports:
+      - tailwindcss:{Config}
+    interfaces: []
+    methods: []
+    props: []
+    purpose: ''
+    state: []
+    type: module
