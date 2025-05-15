@@ -1,10 +1,10 @@
 'use client'; // クライアントコンポーネントであることを示す
 
 import { useState, useRef, useEffect } from "react";
-import Image from "next/image";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import LogoutConfirmationDialog from "./LogoutConfirmationDialog";
+import UserAvatar from "./UserAvatar";
 
 /**
  * Renders a user menu component that displays the user's avatar and a dropdown menu
@@ -54,27 +54,7 @@ export default function UserMenu() {
 
   return (
     <div className="relative" ref={menuRef}>
-      <button
-        onClick={toggleMenu}
-        className="flex items-center justify-center w-8 h-8 rounded-full overflow-hidden focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-        aria-label="ユーザーメニューを開く"
-        aria-expanded={isOpen}
-        aria-haspopup="true"
-      >
-        {user.user_metadata?.avatar_url ? (
-          <Image
-            src={user.user_metadata.avatar_url}
-            alt="User Avatar"
-            width={32}
-            height={32}
-            className="rounded-full"
-          />
-        ) : (
-          <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-white text-xl font-bold">
-            {user.email?.charAt(0).toUpperCase() || "?"}
-          </div>
-        )}
-      </button>
+      <UserAvatar user={user} onClick={toggleMenu} />
 
       {isOpen && (
         <div
@@ -91,7 +71,6 @@ export default function UserMenu() {
               {user.email}
             </p>
           </div>
-          {/* 今後ここに追加のメニュー項目を配置します */}
           <button
             onClick={() => {
               router.push('/user/audios');

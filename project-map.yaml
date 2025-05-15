@@ -303,15 +303,32 @@ files:
     purpose: ''
     state: []
     type: module
+  - path: src/components/auth/UserAvatar.tsx
+    exports:
+      - default:function
+    imports:
+      - next/image:{Image}
+      - '@supabase/supabase-js:{User}'
+    interfaces:
+      - UserAvatarProps
+    methods:
+      - 'UserAvatar({ user, onClick, size = 32 }: UserAvatarProps)'
+    props:
+      - user:unknown
+      - onClick:unknown
+      - size = 32 :unknown
+    purpose: ''
+    state: []
+    type: module
   - path: src/components/auth/UserMenu.tsx
     exports:
       - default:function
     imports:
       - react:{useState,useRef,useEffect}
-      - next/image:{Image}
       - '@/contexts/AuthContext:{useAuth}'
       - next/navigation:{useRouter}
       - ./LogoutConfirmationDialog:{LogoutConfirmationDialog}
+      - ./UserAvatar:{UserAvatar}
     interfaces: []
     methods:
       - UserMenu()
