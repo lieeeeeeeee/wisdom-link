@@ -149,7 +149,7 @@ files:
     exports:
       - default:variable
     imports:
-      - react:{useState,useCallback}
+      - react:{useCallback}
     interfaces:
       - AudioDropDownMenuProps
     methods:
@@ -190,8 +190,7 @@ files:
   - path: src/components/audio/AudioPlayerControls.tsx
     exports:
       - default:variable
-    imports:
-      - react:{useCallback}
+    imports: []
     interfaces:
       - AudioPlayerControlsProps
     methods:
@@ -256,6 +255,7 @@ files:
     imports:
       - react:{React}
       - '@/contexts/AuthContext:{useAuth}'
+      - next/image:{Image}
     interfaces: []
     methods:
       - LoginButton()
