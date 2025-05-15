@@ -1,32 +1,29 @@
 ```mermaid
 graph TD
     %% ユーザー状態 / 初期アクセスからの遷移
-    UserNotLoggedIn["未ログインユーザー"]
+    UserNotLoggedIn["未ログインユーザー"] -- "初期アクセス" --> AudioListPage
     UserLoggedIn["ログイン済みユーザー"]
     LoginAction["ログイン操作 (Googleサインイン)"]
     LogoutAction["ログアウト操作"]
 
-    UserNotLoggedIn -- "Navbar [ログイン] >" --> LoginPage
-    LoginPage -- "Googleでサインイン成功" --> AudioListPage
+    AudioListPage -- "未ログイン時: [ログイン]ボタンなど >" --> LoginAction
+    LoginAction -- "Googleでサインイン成功" --> AudioListPage
 
-    UserLoggedIn -- "Navbar ロゴ >" --> HomePage
+    UserLoggedIn -- "Navbar ロゴ >" --> AudioListPage
     UserLoggedIn -- "Navbar [オーディオ] >" --> AudioListPage
     UserLoggedIn -- "Navbar ユーザーメニュー [アップロード] >" --> UploadPage
     UserLoggedIn -- "Navbar ユーザーメニュー [ログアウト] >" --> LogoutAction
-    LogoutAction -- "ログアウト完了" --> HomePage
+    LogoutAction -- "ログアウト完了" --> AudioListPage
 
     %% ページノード定義
-    HomePage["ホームページ (/)"]
-    LoginPage["ログインページ (AuthContext経由)"]
-    AudioListPage["オーディオ一覧 (/audios)"]
+    HomePage["ホームページ (/) (現在未使用)"]
+    LoginPage["ログインページ (AuthContext経由、直接アクセスは想定しない)"]
+    AudioListPage["オーディオ一覧 (/audios)<br>未ログイン時はログインを促すUIを表示"]
     UploadPage["アップロードページ (/audios/upload)"]
     AudioPlayerPage["オーディオプレーヤー (/player)"]
     ToastDemoPage["トーストデモ (/toast-demo)"]
 
     %% 各ページからの遷移
-    HomePage -.-> AudioListPage
-    HomePage -.-> UploadPage
-
     AudioListPage -- "ページ内 [オーディオをアップロード] >" --> UploadPage
     AudioListPage -- "オーディオタイルクリック (再生目的)" --> AudioPlayerPage
 
@@ -50,7 +47,6 @@ graph TD
 
     %% サブグラフ定義
     subgraph "主要ページ"
-        HomePage
         AudioListPage
         UploadPage
         AudioPlayerPage
@@ -68,5 +64,6 @@ graph TD
         ToastDemoPage
         AdminOrDevAccess1
         AdminOrDevAccess2
+        HomePage
     end
 ``` 
